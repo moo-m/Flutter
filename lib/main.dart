@@ -1,58 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: VolumeHome(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
+class VolumeHome extends StatelessWidget {
+  static const platform = MethodChannel('volume_channel');
 
-  int counter = 0;
+  const VolumeHome({super.key});
 
-  void increase() {
-    setState(() {
-      counter++;
-    });
+  Future<void> increase() async {
+    try {
+      await platform.invokeMethod('increaseVolume');
+    } catch (_) {}
+  }
+
+  Future<void> decrease() async {
+    try {
+      await platform.invokeMethod('decreaseVolume');
+    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Flutter APK Test"),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-
-              Text(
-                "Counter:",
-                style: TextStyle(fontSize: 30),
-              ),
-
-              SizedBox(height: 20),
-
-              Text(
-                "$counter",
-                style: TextStyle(fontSize: 50),
-              ),
-
-              SizedBox(height: 30),
-
-              ElevatedButton(
-                onPressed: increase,
-                child: Text("Increase"),
-              )
-
-            ],
-          ),
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: increase,
+              child: const Text("+"),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: decrease,
+              child: const Text("-"),
+            ),
+          ],
         ),
       ),
     );
